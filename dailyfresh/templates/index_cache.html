@@ -1,0 +1,84 @@
+
+{% extends "static_base.html" %}
+{% load staticfiles %}
+{% block title %}天天生鲜-首页{% endblock title %}
+{% block topfiles %}
+    	<script type="text/javascript" src="{% static "js/jquery-1.12.4.min.js" %}"></script>
+    	<script type="text/javascript" src="{% static "js/jquery-ui.min.js" %}"></script>
+    	<script type="text/javascript" src="{% static "js/slide.js" %}"></script>
+{% endblock topfiles %}
+
+{% block body %}
+    	<div class="navbar_con">
+		<div class="navbar">
+			<h1 class="fl">全部商品分类</h1>
+			<ul class="navlist fl">
+				<li><a href="">首页</a></li>
+				<li class="interval">|</li>
+				<li><a href="">手机生鲜</a></li>
+				<li class="interval">|</li>
+				<li><a href="">抽奖</a></li>
+			</ul>
+		</div>
+	</div>
+
+	<div class="center_con clearfix">
+		<ul class="subnav fl">
+            {% for goods in goods_type %}
+			<li><a href="/list/{{ goods.id }}/" class="fruit">{{ goods.name }}</a></li>
+            {% endfor %}
+
+		</ul>
+		<div class="slide fl">
+			<ul class="slide_pics">
+                {% for index_goods in index_goods_banner %}
+				<li><a href="/detail/{{ index_goods.sku.id }}"><img src="{{ index_goods.image.url }}" alt="幻灯片"></a></li>
+                {% endfor %}
+
+			</ul>
+			<div class="prev"></div>
+			<div class="next"></div>
+			<ul class="points"></ul>
+		</div>
+		<div class="adv fl">
+            {% for index_pro in index_pro_motion %}
+			<a href="/detail/{{ index_pro.id }}"><img src="{{ index_pro.image.url }}"></a>
+            {% endfor %}
+
+		</div>
+	</div>
+
+    {% for goods in goods_type %}
+	<div class="list_model">
+		<div class="list_title clearfix">
+			<h3 class="fl" id="model0{{ forloop.counter }}">{{ goods.name }}</h3>
+			<div class="subtitle fl">
+				<span>|</span>
+
+                {% for good in goods.title_banner %}
+				<a href="/detail/{{ good.sku.id }}">{{ good.sku.name }}</a>
+                {% endfor %}
+
+			</div>
+			<a href="#" class="goods_more fr" id="fruit_more">查看更多 ></a>
+		</div>
+
+		<div class="goods_con clearfix">
+			<div class="goods_banner fl"><a href="/detail/{{ good.sku.id }}"><img src="{{ goods.image.url }}"></a></div>
+			<ul class="goods_list fl">
+                {% for good in goods.image_banner %}
+				<li>
+					<h4><a href="/detail/{{ good.sku.id }}">{{ good.sku.name }}</a></h4>
+					<a href="/detail/{{ good.sku.id }}"><img src="{{ good.sku.image.url }}"></a>
+					<div class="prize">¥ {{ good.sku.price }}</div>
+				</li>
+                    {% endfor %}
+
+			</ul>
+		</div>
+	</div>
+{% endfor %}
+
+{% endblock body %}
+
+
