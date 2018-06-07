@@ -39,7 +39,8 @@
             {% endfor %}
 			<div class="operate_btn">
 				<a href="javascript:;" class="buy_btn">立即购买</a>
-				<a href="javascript:;" class="add_cart" id="add_cart">加入购物车</a>				
+                {% csrf_token %}
+				<a href="javascript:;" sku_id="{{ details.id }}" class="add_cart" id="add_cart">加入购物车</a>
 			</div>
 		</div>
 	</div>
@@ -64,7 +65,7 @@
 		<div class="r_wrap fr clearfix">
 			<ul class="detail_tab clearfix">
 				<li class="active">商品介绍</li>
-				<li>{{ sku_order }}</li>
+				<li>评论</li>
 			</ul>
 
 			<div class="tab_content">
@@ -84,24 +85,104 @@
 {% endblock bottom %}
 
 {% block bottomfiles %}
-	<script type="text/javascript">
-		var $add_x = $('#add_cart').offset().top;
-		var $add_y = $('#add_cart').offset().left;
+    <script type="text/javascript">
+        {# 获取要操作的对象,添加、减少、数量、 #}
+        var $add = $(".add"),
+            $minus = $(".minus"),
+            $count_num = $('.num_show'),
+            $add_cart = $("#add_cart");
 
-		var $to_x = $('#show_count').offset().top;
-		var $to_y = $('#show_count').offset().left;
+        {# 获取价格和数量，修改总价 #}
+        function update_total_price() {
 
-		$(".add_jump").css({'left':$add_y+80,'top':$add_x+10,'display':'block'})
-		$('#add_cart').click(function(){
-			$(".add_jump").stop().animate({
-				'left': $to_y+7,
-				'top': $to_x+7},
-				"fast", function() {
-					$(".add_jump").fadeOut('fast',function(){
+            var price = $('.show_pirze').children('em').text(),
+                count = $count_num.val();
+
+            price = parseFloat(price);
+            count = parseInt(count);
+            amount = price*count;
+            $(".total em").text(amount.toFixed(2)+"元")
+        }
+        update_total_price();
+
+        {# 对添加设置点击事件,修改数量和总价 #}
+        $add.click(function () {
+            {# 获取数量然后加１并设置 #}
+            var count = $count_num.val();
+            count = parseInt(count)+1;
+            $count_num.val(count);
+            {# 调用修改函数更改总价 #}
+            update_total_price();
+        });
+
+        {# 对减少设置点击事件,修改数量和总价 #}
+        $minus.click(function () {
+            {# 获取数量然后减１并设置 #}
+            var count = $count_num.val();
+            count = parseInt(count)-1;
+            {# 不允许小于１ #}
+            if (count <=1){
+                count =1
+            }
+            $count_num.val(count);
+            {# 调用修改函数更改总价 #}
+            update_total_price();
+
+        });
+        {# 对数量设置失去焦点事件 #}
+        $count_num.blur(function () {
+            {# 获取数量 #}
+            var count = $(this).val();
+            {# 校验数据是否正确,不正确设为１ #}
+            if (isNaN(count) || count.trim().length==0 || parseInt(count) <=0){
+                count = 1
+            }
+            $count_num.val(count);
+            update_total_price();
+
+        });
+
+
+
+
+        $add_cart.click(function () {
+            var count = $count_num.val(),
+                sku_id = $(this).attr("sku_id"),
+                token_val = $(this).prev().val();
+            var params = {"count":count,"sku_id":sku_id,
+                    "csrfmiddlewaretoken":token_val
+                    };
+
+            var $add_x = $('#add_cart').offset().top;
+            var $add_y = $('#add_cart').offset().left;
+
+		    var $to_x = $('#show_count').offset().top;
+		    var $to_y = $('#show_count').offset().left;
+
+            $.post("/cart/add",params,function (dat) {
+                if (dat.res == 5){
+                    // 添加成功
+                    alert("添加成功");
+                    $(".add_jump").css({'left':$add_y+80,'top':$add_x+10,'display':'block'});
+		            $('#add_cart').click(function(){
+			        $(".add_jump").stop().animate({
+				    'left': $to_y+7,
+				    'top': $to_x+7},
+				    "fast", function() {
+					    $(".add_jump").fadeOut('fast',function(){
 						$('#show_count').html(2);
-					});
+					    });
+			        });
+		            });
+                }
+                else {
+                    alert(dat.error)
+                }
+            });
+        });
 
-			});
-		})
+
+
+
 	</script>
 {% endblock bottomfiles %}

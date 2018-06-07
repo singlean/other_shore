@@ -1,7 +1,7 @@
 import os
-import django
-os.environ.setdefault("DJANGO_SETTINGS_MODULE","dailyfresh.settings")
-django.setup()
+# import django
+# os.environ.setdefault("DJANGO_SETTINGS_MODULE","dailyfresh.settings")
+# django.setup()
 
 from celery import Celery
 from dailyfresh import settings
@@ -57,7 +57,6 @@ def index_cache_static_html():
 
     with open(save_path,"w") as f:
         f.write(static_index_html)
-
 
 
 

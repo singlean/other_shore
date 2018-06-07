@@ -1,5 +1,5 @@
 
-{% extends "static_base.html" %}
+{% extends "base.html" %}
 {% load staticfiles %}
 {% block title %}天天生鲜-首页{% endblock title %}
 {% block topfiles %}
@@ -7,6 +7,32 @@
     	<script type="text/javascript" src="{% static "js/jquery-ui.min.js" %}"></script>
     	<script type="text/javascript" src="{% static "js/slide.js" %}"></script>
 {% endblock topfiles %}
+
+{# 网页顶部欢迎信息块 #}
+{% block header_con %}
+	<div class="header_con">
+		<div class="header">
+			<div class="welcome fl">欢迎来到天天生鲜!</div>
+			<div class="fr">
+
+                    <div class="login_btn fl">
+                    <a  href="{% url "user:login" %}">登陆</a>
+                     <span>|</span>
+                    <a href="{% url "user:register" %}">注册</a>
+                    </div>
+
+				<div class="user_link fl">
+					<span>|</span>
+					<a href="{% url 'user:user' %}">用户中心</a>
+					<span>|</span>
+					<a href="cart.html">我的购物车</a>
+					<span>|</span>
+					<a href="{% url 'user:order' %}">我的订单</a>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock header_con %}
 
 {% block body %}
     	<div class="navbar_con">

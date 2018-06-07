@@ -1,8 +1,8 @@
 from django.contrib import admin
 from celery_tasks.tasks import index_cache_static_html
 from apps.goods.models import *
-# Register your models here.
 
+# Register your models here.
 
 class BaseModelAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
@@ -23,35 +23,3 @@ admin.site.register(GoodsType, BaseModelAdmin)
 admin.site.register(IndexGoodsBanner, BaseModelAdmin)
 admin.site.register(IndexTypeGoodsBanner, BaseModelAdmin)
 admin.site.register(IndexPromotionBanner, BaseModelAdmin)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

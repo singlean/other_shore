@@ -35,7 +35,7 @@
 			<ul class="goods_type_list clearfix">
                 {% for good in page %}
 				<li>
-					<a href="detail.html"><img src="{{ good.image.url }}"></a>
+					<a href="/detail/{{ good.id }}"><img src="{{ good.image.url }}"></a>
 					<h4><a href="/detail/{{ good.id }}">{{ good.name }}</a></h4>
 					<div class="operate">
 						<span class="prize">￥{{ good.price }}</span>
@@ -48,18 +48,22 @@
 			</ul>
 
 			<div class="pagenation">
+                {# 判断是否有上一页 #}
                 {% if page.has_previous %}
                     <a href="/list/{{ now_type.id }}/{{ page.previous_page_number }}?sort={{ sort }}">上一页</a>
                 {% else %}
                     <a>无上页</a>
                 {% endif %}
-                {% for li in page.paginator.page_range %}
+                {# 设置页码列表 #}
+                {% for li in page_list %}
+                    {# 如果是当前页不设置链接 #}
                     {% if li == page.number %}
-				        <a href="/list/{{ now_type.id }}/{{ li }}?sort={{ sort }}" class="active">{{ li }}</a>
+				        <a href="#" class="active">{{ li }}</a>
                     {% else %}
                         <a href="/list/{{ now_type.id }}/{{ li }}?sort={{ sort }}">{{ li }}</a>
                     {% endif %}
                 {% endfor %}
+                {# 判断是否有下一页 #}
                 {% if page.has_next %}
                     <a href="/list/{{ now_type.id }}/{{ page.next_page_number }}?sort={{ sort }}">下一页</a>
                 {% else %}

@@ -1,0 +1,6 @@
+{{object.name}}     # 把商品名称纳入索引，能够搜索
+{{object.desc}}     # 把商品简介纳入索引，能够搜索
+{{object.goods.detail}}    # 把商品详情纳入索引，能够搜索
+
+
+

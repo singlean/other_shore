@@ -44,6 +44,7 @@ INSTALLED_APPS = (
     'apps.goods', # 商品模块
     'apps.cart', # 购物车模块
     'apps.order', # 订单模块
+    "haystack",  # 注册索引框架
 )
 
 MIDDLEWARE_CLASSES = (
@@ -139,8 +140,9 @@ EMAIL_HOST_PASSWORD = '163email'
 EMAIL_FROM = '天天生鲜<13972749880@163.com>'
 
 # 服务器ip和端口号,celery异步发送邮件需要使用
-SERVER_IP_PORT = "192.168.110.128:8006"
+SERVER_IP_PORT = "192.168.110.128:8001"
 
+# redis数据库配置
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
@@ -167,7 +169,19 @@ FDFS_CLIENT_CONF='./utils/fdfs/client.conf'
 FDFS_URL='http://192.168.110.129:8888/'
 
 
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        # 使用whoosh引擎
+        'ENGINE': 'haystack.backends.whoosh_cn_backend.WhooshEngine',
+        # 索引文件路径
+        'PATH': os.path.join(BASE_DIR, 'whoosh_index'),
+    }
+}
 
+# 当添加、修改、删除数据时，自动生成索引
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+
+HAYSTACK_SEARCH_RESULTS_PER_PAGE = 3
 
 
 
