@@ -8,7 +8,7 @@ urlpatterns = [
     url(r"^logout$", Logoutview.as_view(), name="logout"),  # 退出登陆
 
     url(r"^user$", Userinfoview.as_view(), name="user"),     # 用户中心
-    url(r"^order$", Userorderview.as_view(), name="order"),  # 订单页
+    url(r"^order/(\d+)$", Userorderview.as_view(), name="order"),  # 订单页
     url(r"^address$", Addressview.as_view(), name="address"),  #　添加信息
 
 

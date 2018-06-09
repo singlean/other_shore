@@ -1,6 +1,7 @@
 from django.shortcuts import render,redirect        # 模板函数,重定向
 from apps.user.models import User,Address       # 用户信息表
 from apps.goods.models import GoodsSKU
+from apps.order.models import OrderGoods,OrderInfo
 from django.views.generic import View       # 类视图
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer      # 签名邮件用户信息
 from celery_tasks.tasks import send_register_active_email       # celery异步邮件处理
@@ -11,6 +12,7 @@ from django.http import HttpResponse        # 返回结果对象
 from django.contrib.auth import authenticate,login,logout        # 认证函数,记录登陆状态函数
 from utils.mixin import LoginRequiredMixin      # 用户登陆验证,未登录无法进入
 from django_redis import get_redis_connection       # 快捷创建链接redis对象的方法
+from django.core.paginator import Paginator
 
 # Create your views here.
 
@@ -198,13 +200,37 @@ class Userinfoview(LoginRequiredMixin,View):
 # 订单界面
 class Userorderview(LoginRequiredMixin,View):
 
-    def get(self,request):
+    def get(self,request,page_num):
+        user = request.user
+        order_infos = OrderInfo.objects.filter(user=user).order_by('-create_time')
+        # 获取分页对象
+        paginator = Paginator(order_infos,2)
+        # 获取总页数
+        pages = paginator.num_pages
+        # 页码数为空或大于总页数,赋值为１
+        if not page_num:
+            page_num = 1
+        elif pages < int(page_num):
+            page_num = 1
+        # 获取当前页数据
+        page = paginator.page(page_num)
+        # 总页数小于等于五,显示所有
+        # 当前页小于等于３,显示1到5
+        # 当前页为后三页,显示最后5页
+        # 显示前后共5页
+        # 获取页码列表
+        if pages <=5:
+            page_list = range(1,pages+1)
+        elif int(page_num)<=3:
+            page_list = range(1,6)
+        elif int(page_num) > pages-3:
+            page_list = range(pages-4,pages+1)
+        else:
+            page_list = range(page_num-2,page_num+3)
 
-        return render(request, "user_center_order.html",{"page":"order"})
+        context = {"order_infos":order_infos,"page":page,"page_list":page_list}
 
-    def post(self, request):
-
-        return render(request, "user_center_order.html")
+        return render(request, "user_center_order.html",context)
 
 
 # 收件人信息界面

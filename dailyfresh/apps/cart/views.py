@@ -50,7 +50,8 @@ class CartAddView(View):
         conn.hset(cart_key,sku_id,count)
         # 查询商品数,返回结果
         redis_count = conn.hlen(cart_key)
-        return JsonResponse({"res": 5, "error": "添加成功","redis_count":redis_count})
+        print(redis_count)
+        return JsonResponse({"res": 5, "success": "添加成功","redis_count":redis_count})
 
 
 class CartInfoView(LoginRequiredMixin,View):
@@ -83,6 +84,95 @@ class CartInfoView(LoginRequiredMixin,View):
         context = {"sku_count":sku_count,"price_count":price_count,"skus":skus}
 
         return render(request,"cart_info.html",context)
+
+
+class CartUpdateView(View):
+
+    def post(self,request):
+
+        # 登陆验证
+        user = request.user
+        if not user.is_authenticated():
+            return JsonResponse({"res": 0, "error": "未登录"})
+
+        # 接受参数
+        sku_id = request.POST.get("sku_id")
+        sku_count = request.POST.get("sku_count")
+
+        # 校验函数
+        if not all([sku_id,sku_id]):
+            return JsonResponse({"res":1,"error":"数据不完整"})
+        # 判断是否为有效商品
+        try:
+            sku = GoodsSKU.objects.get(id=sku_id)
+        except:
+            return JsonResponse({"res":2,"error":"商品无"})
+        # 判断数量是否为空或其他
+        try:
+            sku_count = int(sku_count)
+        except:
+            return JsonResponse({"res":3,"error":"数量错误"})
+
+        # 业务处理
+        conn = get_redis_connection("default")
+        cart_key = "cart_%d"%user.id
+        # 判断库存是否充足
+        if sku_count > sku.stock:
+            user_sku_count = int(conn.hget(cart_key,sku_id))
+            return JsonResponse({"res": 4, "error": "库存不足","user_sku_count":user_sku_count})
+
+        # 修改次商品的数量
+        conn.hset(cart_key,sku_id,sku_count)
+        # 查询商品数,返回结果
+        redis_count = conn.hlen(cart_key)
+        return JsonResponse({"res": 5, "success": "添加成功","redis_count":redis_count})
+
+
+class CartDeleteView(View):
+
+    def post(self,request):
+
+        # 登陆验证
+        user = request.user
+        if not user.is_authenticated():
+            return JsonResponse({"res": 0, "error": "未登录"})
+        # 接受参数
+        sku_id = request.POST.get("sku_id")
+        # 判断数据是否为空
+        if not sku_id:
+            return JsonResponse({"res":1,"error":"数据为空"})
+        # 判断是否有此商品
+        sku = GoodsSKU.objects.filter(id=sku_id)
+        if not sku:
+            return JsonResponse({"res": 2, "error": "没有此商品"})
+
+        cart_key = "cart_%d"%user.id
+        conn = get_redis_connection("default")
+        conn.hdel(cart_key,sku_id)
+
+        return JsonResponse({"res":3,"ok":"删除成功"})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
