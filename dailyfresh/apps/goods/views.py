@@ -41,7 +41,7 @@ class IndexView(View):
                        "index_pro_motion":index_pro_motion}
 
             # 将首页相同数据设置缓存
-            # cache.set("index_page_data",content,600)
+            cache.set("index_page_data",content,600)
 
         # 获取购物车商品记录
         user = request.user

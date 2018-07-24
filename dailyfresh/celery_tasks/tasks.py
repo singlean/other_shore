@@ -85,5 +85,3 @@ def index_cache_static_html():
 
 
 
-
-
